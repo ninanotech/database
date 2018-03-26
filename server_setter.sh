@@ -3,6 +3,7 @@
 ######################################################################################
 # Name: server_setter.sh
 # Date: 2018-03-23
+# Made: ninanotech.com (MyoungSigYoun)
 # Desc: Linux Server Setting Script
 # Ver :
 #      2018-03-23 : 0.1
