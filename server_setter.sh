@@ -8,6 +8,9 @@
 # Ver :
 #      2018-03-23 : 0.1
 #                   Create
+#      2018-03-26 : 0.2
+#                   Check Hugepage Setting set_sysctl() 
+#                      vm.hugetlb_shm_group = `service user group id`
 ######################################################################################
 
 export  PATH=/bin:/usr/bin:/sbin:/usr/sbin:.
