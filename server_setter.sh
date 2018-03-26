@@ -241,6 +241,7 @@ export MAX_ORPHAN=$(echo "$MEM_BYTES * 0.10 / 65536" | bc | cut -f 1 -d '.')
 export FILE_MAX=$(echo "$MEM_BYTES / 4194304 * 256" | bc | cut -f 1 -d '.')
 export MAX_TW=$(($FILE_MAX * 2))
 export MIN_FREE=$(echo "($MEM_BYTES / 1024) * 0.01" | bc | cut -f 1 -d '.')
+export HUGEPAGE=$(echo "($MEM_BYTES * 0.25) / (2048 * 1024)" | bc | cut -f 1 -d '.')
 
 mv /etc/sysctl.conf /etc/sysctl.conf.$DATE
 
@@ -267,8 +268,8 @@ echo "vm.max_map_count=1048576" >> /etc/sysctl.conf
 echo "vm.swappiness=0 " >> /etc/sysctl.conf
 
 echo "# this part check" >> /etc/sysctl.conf
-echo "#vm.nr_hugepages=1024 " >> /etc/sysctl.conf
-echo "#vm.hugetlb_shm_group=1000" >> /etc/sysctl.conf
+echo "vm.nr_hugepages=$HUGEPAGE " >> /etc/sysctl.conf
+echo "vm.hugetlb_shm_group=1000" >> /etc/sysctl.conf
 echo "#" >> /etc/sysctl.conf
 
 echo "vm.dirty_background_ratio=10" >> /etc/sysctl.conf
@@ -308,7 +309,7 @@ echo "net.ipv4.tcp_max_syn_backlog=20000" >> /etc/sysctl.conf
 echo "net.ipv4.tcp_max_tw_buckets=$MAX_TW" >> /etc/sysctl.conf
 echo "net.ipv4.ip_local_port_range = 9000 65500" >> /etc/sysctl.conf
 #
-
+sysctl -p
 }
 
 #
