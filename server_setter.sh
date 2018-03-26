@@ -267,8 +267,8 @@ echo "vm.max_map_count=1048576" >> /etc/sysctl.conf
 echo "vm.swappiness=0 " >> /etc/sysctl.conf
 
 echo "# this part check" >> /etc/sysctl.conf
-echo "vm.nr_hugepages=1024 " >> /etc/sysctl.conf
-echo "vm.hugetlb_shm_group=1000" >> /etc/sysctl.conf
+echo "#vm.nr_hugepages=1024 " >> /etc/sysctl.conf
+echo "#vm.hugetlb_shm_group=1000" >> /etc/sysctl.conf
 echo "#" >> /etc/sysctl.conf
 
 echo "vm.dirty_background_ratio=10" >> /etc/sysctl.conf
