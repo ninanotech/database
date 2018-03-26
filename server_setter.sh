@@ -8,9 +8,6 @@
 # Ver :
 #      2018-03-23 : 0.1
 #                   Create
-#      2018-03-26 : 0.2
-#                   Check Hugepage Setting set_sysctl() 
-#                      vm.hugetlb_shm_group = `service user group id`
 ######################################################################################
 
 export  PATH=/bin:/usr/bin:/sbin:/usr/sbin:.
@@ -179,7 +176,7 @@ then
 
     echo "######################################################################################"
     echo "if data directiory file system is xfs then /etc/fstab"
-    echo "    xfs mount option: rw,noatime,nodiratime,logbufs=8,logbsize=256k,attr2,allocsize=1m"
+    echo "    xfs mount option: rw,noatime,nodiratime,inode64,logbufs=8,logbsize=256k,attr2,allocsize=1m"
     echo " else ext4 then /etc/fstab"
     echo "   ext4 mount option: rw,noatime,nodiratime,nobarrier,data=ordered"
     echo "######################################################################################"
@@ -190,7 +187,7 @@ then
 
     echo "######################################################################################"
     echo "if data directiory file system is xfs then /etc/fstab"
-    echo "    xfs mount option: rw,noatime,nodiratime,logbufs=8,logbsize=256k,attr2,allocsize=1m"
+    echo "    xfs mount option: rw,noatime,nodiratime,inode64,logbufs=8,logbsize=256k,attr2,allocsize=1m"
     echo " else ext4 then /etc/fstab"
     echo "   ext4 mount option: rw,noatime,nodiratime,nobarrier,data=ordered"
     echo "######################################################################################"
@@ -255,6 +252,8 @@ echo "kernel.sched_min_granularity_ns=2000000 " >> /etc/sysctl.conf
 echo "kernel.sched_latency_ns=10000000 " >> /etc/sysctl.conf
 echo "kernel.sched_wakeup_granularity_ns=5000000 " >> /etc/sysctl.conf
 echo "kernel.sched_migration_cost_ns=500000 " >> /etc/sysctl.conf
+echo "kernel.sysrq=1" >> /etc/sysctl.conf
+echo "kernel.core_uses_pid=1" >> /etc/sysctl.conf
 
 echo "## Shared mem" >> /etc/sysctl.conf
 echo "kernel.msgmnb=65536 " >> /etc/sysctl.conf
@@ -285,7 +284,7 @@ echo "fs.file-max=$FILE_MAX " >> /etc/sysctl.conf
 echo "fs.aio-max-nr=$FILE_MAX" >> /etc/sysctl.conf
 
 echo "net.core.somaxconn=65535 " >> /etc/sysctl.conf
-echo "net.core.netdev_max_backlog=4000 " >> /etc/sysctl.conf
+echo "net.core.netdev_max_backlog=10000 " >> /etc/sysctl.conf
 echo "net.core.rmem_default=25165824 " >> /etc/sysctl.conf
 echo "net.core.rmem_max=25165824 " >> /etc/sysctl.conf
 echo "net.core.wmem_default=25165824 " >> /etc/sysctl.conf
@@ -307,6 +306,8 @@ echo "net.ipv4.tcp_max_orphans=$MAX_ORPHAN" >> /etc/sysctl.conf
 echo "net.ipv4.tcp_rfc1337=1" >> /etc/sysctl.conf
 echo "net.ipv4.tcp_timestamps=1" >> /etc/sysctl.conf
 echo "net.ipv4.ip_forward=0" >> /etc/sysctl.conf
+echo "net.ipv4.tcp_syncookies=1" >> /etc/sysctl.conf
+echo "net.ipv4.conf.default.accept_source_route=0" >> /etc/sysctl.conf
 echo "net.ipv4.tcp_tw_recycle=1" >> /etc/sysctl.conf
 echo "net.ipv4.tcp_max_syn_backlog=20000" >> /etc/sysctl.conf
 echo "net.ipv4.tcp_max_tw_buckets=$MAX_TW" >> /etc/sysctl.conf
