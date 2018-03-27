@@ -285,10 +285,10 @@ echo "fs.aio-max-nr=$FILE_MAX" >> /etc/sysctl.conf
 
 echo "net.core.somaxconn=65535 " >> /etc/sysctl.conf
 echo "net.core.netdev_max_backlog=10000 " >> /etc/sysctl.conf
-echo "net.core.rmem_default=25165824 " >> /etc/sysctl.conf
-echo "net.core.rmem_max=25165824 " >> /etc/sysctl.conf
-echo "net.core.wmem_default=25165824 " >> /etc/sysctl.conf
-echo "net.core.wmem_max=25165824 " >> /etc/sysctl.conf
+echo "net.core.rmem_default=26214400 " >> /etc/sysctl.conf
+echo "net.core.rmem_max=26214400 " >> /etc/sysctl.conf
+echo "net.core.wmem_default=26214400 " >> /etc/sysctl.conf
+echo "net.core.wmem_max=26214400 " >> /etc/sysctl.conf
 
 echo "net.ipv6.conf.all.disable_ipv6=1 " >> /etc/sysctl.conf
 echo "net.ipv6.conf.default.disable_ipv6=1 " >> /etc/sysctl.conf
