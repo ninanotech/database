@@ -59,7 +59,7 @@ install_package() {
         apt-get install glances mc language-pack-ko hunspell-ko binutils ksh libaio-dev unixodbc unixodbc-dev python python-dev lvm2 lvm2-dev parted
         apt-get install openssl openssl-dev readline-common zlib1g zlib1g-dev ncurses-base ib64ncurses5 ib64ncurses5-dev libxml2 libxml2-dev xz-utils liblzma5 liblzma-dev
         apt-get install libxslt1.1 libxslt1-dev tcl8.4 tcl8.4-dev tk8.4 tk8.4-dev firewalld libx11-6 libx11-dev libxau6 libxau-dev libxcb1 libxcb1-dev
-    elif [ $OS = centos ] || [ $OS = redhat ] || [ $OS = oracle ]
+    elif [ $OS = centos ] || [ $OS = redhat ] || [ $OS = ol ]
     then
         yum update -y
         yum upgrade -y
@@ -88,7 +88,7 @@ swapoff -a
 if [ $OS = ubuntu ] || [ $OS = debian ] 
 then
     chmod 755 /etc/rc.local
-elif [ $OS = centos ] || [ $OS = redhat ] || [ $OS = oracle ]
+elif [ $OS = centos ] || [ $OS = redhat ] || [ $OS = ol ]
 then
     chmod 755 /etc/rc.d/rc.local
 fi  
@@ -109,7 +109,7 @@ then
     echo "# $DATE : Modify server setter" >> /etc/rc.local
     echo "echo never > /sys/kernel/mm/transparent_hugepage/enabled" >> /etc/rc.local
     echo "echo never > /sys/kernel/mm/transparent_hugepage/defrag" >> /etc/rc.local
-elif [ $OS = centos ] || [ $OS = redhat ] || [ $OS = oracle ]
+elif [ $OS = centos ] || [ $OS = redhat ] || [ $OS = ol ]
 then
     echo "# $DATE : Modify server setter" >> /etc/rc.d/rc.local
     echo "echo never > /sys/kernel/mm/transparent_hugepage/enabled" >> /etc/rc.d/rc.local
@@ -145,7 +145,7 @@ if [ $OS = ubuntu ] || [ $OS = debian ]
 then
     echo "# $DATE : Modify server setter" >> /etc/pam.d/login
     echo "session required /lib/x86_64-linux-gnu/security/pam_limits.so" >> /etc/pam.d/login
-elif [ $OS = centos ] || [ $OS = redhat ] || [ $OS = oracle ]
+elif [ $OS = centos ] || [ $OS = redhat ] || [ $OS = ol ]
 then
     echo "# $DATE : Modify server setter" >> /etc/pam.d/login
     echo "session required /lib64/security/pam_limits.so" >> /etc/pam.d/login
@@ -180,7 +180,7 @@ then
     echo " else ext4 then /etc/fstab"
     echo "   ext4 mount option: rw,noatime,nodiratime,nobarrier,data=ordered"
     echo "######################################################################################"
-elif [ $OS = centos ] || [ $OS = redhat ] || [ $OS = oracle ]
+elif [ $OS = centos ] || [ $OS = redhat ] || [ $OS = ol ]
 then
     echo "echo noop > /sys/block/sdb/queue/scheduler" >> /etc/rc.d/rc.local
     echo "echo 1000 > /sys/block/sdb/queue/nr_requests" >> /etc/rc.d/rc.local
@@ -217,7 +217,7 @@ if [ $OS = ubuntu ] || [ $OS = debian ]
 then
     mv /etc/default/ntpd /etc/default/ntpd.`date +%Y%m%d`
     echo "NTPD_OPTS=\"-x -g\"" > /etc/default/ntpd
-elif [ $OS = centos ] || [ $OS = redhat ] || [ $OS = oracle ]
+elif [ $OS = centos ] || [ $OS = redhat ] || [ $OS = ol ]
 then
     mv /etc/sysconfig/ntpd /etc/sysconfig/ntpd.`date +%Y%m%d`
     echo "OPTIONS=\"-x -u ntp:ntp -p /var/run/ntpd.pid -g\"" > /etc/sysconfig/ntpd
@@ -365,7 +365,7 @@ fi
 echo $DATETIME : $HOST $OS $ARCH $1 'Server Setting Processes start'
 #
 
-if [ $OS = redhat ] || [ $OS = oracle ]
+if [ $OS = redhat ] || [ $OS = ol ]
 then
     make_local_repo
 fi
