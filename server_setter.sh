@@ -35,12 +35,12 @@ echo 'Make yum local repo'
 
 if [ -d /mnt/Packages ]
 then
-    echo "# $DATE : Modify server setter" >> /etc/yum.repo.d/local.repo
-    echo "[local-repo]" >> /etc/yum.repo.d/local.repo
-    echo "name=Local Repository">> /etc/yum.repo.d/local.repo
-    echo "baseurl=file:///mnt" >> /etc/yum.repo.d/local.repo
-    echo "enabled=1" >> /etc/yum.repo.d/local.repo
-    echo "gpgcheck=0" >> /etc/yum.repo.d/local.repo
+    echo "# $DATE : Modify server setter" > /etc/yum.repos.d/local.repo
+    echo "[local-repo]" >> /etc/yum.repos.d/local.repo
+    echo "name=Local Repository">> /etc/yum.repos.d/local.repo
+    echo "baseurl=file:///mnt" >> /etc/yum.repos.d/local.repo
+    echo "enabled=1" >> /etc/yum.repos.d/local.repo
+    echo "gpgcheck=0" >> /etc/yum.repos.d/local.repo
 else
     echo "!!! Mount OS DVD to /mnt !!!"
     echo "mount -t iso9660 /dev/cdrom /mnt"
@@ -53,44 +53,45 @@ install_package() {
     if [ $OS = ubuntu ] || [ $OS = debian ] 
     then
         apt-get update -y
-        apt-get upgrade -y
-
-        apt-get install lsb gcc g++ git gdb cmake flex bison autoconf automake xlock xterm zip unzip bzip2 nano vim ntp ntpdate numactl hdparm bc lynx sysstat dstat strace
+        
+        apt-get install lsb gcc g++ git gdb cmake flex bison autoconf automake xlock xterm zip unzip bzip2 nano vim ntp ntpdate numactl hdparm bc lynx sysstat dstat strace screen mdadm
         apt-get install glances mc language-pack-ko hunspell-ko binutils ksh libaio-dev unixodbc unixodbc-dev python python-dev lvm2 lvm2-dev parted
         apt-get install openssl openssl-dev readline-common zlib1g zlib1g-dev ncurses-base ib64ncurses5 ib64ncurses5-dev libxml2 libxml2-dev xz-utils liblzma5 liblzma-dev
-        apt-get install libxslt1.1 libxslt1-dev tcl8.4 tcl8.4-dev tk8.4 tk8.4-dev firewalld libx11-6 libx11-dev libxau6 libxau-dev libxcb1 libxcb1-dev
-    elif [ $OS = centos ] || [ $OS = redhat ] || [ $OS = ol ]
+        apt-get install libxslt1.1 libxslt1-dev tcl8.4 tcl8.4-dev tk8.4 tk8.4-dev firewalld libx11-6 libx11-dev libxau6 libxau-dev libxcb1 libxcb1-dev htop nmon
+
+        apt-get upgrade -y
+    elif [ $OS = centos ] || [ $OS = rhel ] || [ $OS = ol ]
     then
+        yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -y
+
         yum update -y
-        yum upgrade -y
-        
-        if [ $OS = centos ]
-        then
-            yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -y
-        fi
-
-        yum install gcc g++ git gdb make cmake flex bsion autoconf automake xclock xterm -y
-        yum install redhat-lsb net-tools bind-utils ethool dstat strace lynx nano vim ntp ntpdate numactl hdparm glances python python-devel python-pip zip unzip bzip2 wget hunspell-ko man-pages-ko -y
-        yum install bc binutils compat-libcap1 compat-libstdc++ glibc glibc-devel ksh libaio libaio-devel libX11 libXau libXi libXst libgcc libstdc++ libxcb  nfs-utils -y 
+        yum install zsh gcc g++ git gdb make cmake flex bsion autoconf automake xclock xterm cyrus-sasl cyrus-sasl-devel libcap libcap-devel -y
+        yum install redhat-lsb net-tools bind-utils ethool dstat strace lynx nano vim ntp ntpdate numactl hdparm zip unzip bzip2 wget hunspell-ko man-pages-ko python-devel -y
+        yum install mdadm glances nmon bc binutils compat-libcap1 compat-libstdc++ glibc glibc-devel ksh libaio libaio-devel libX11 libXau libXi libXst libgcc libstdc++ libxcb  nfs-utils -y 
         yum install python-configshell python-rtlib python-six smartmontools sysstat targetcli lvm2 lvm2-devel unixODBC unixODBC-devel mc parted -y
-        yum install openssl openssl-libs openssl-devel zlib-devel ncurses-devel libxml2 libxml2-devel xz xz-devel libxslt libxslt-devel readline readline-devel tk tcl tcl-devel kernel-devel pam-devel firewalld -y
+        yum install htop openssl openssl-libs openssl-devel zlib-devel ncurses-devel libxml2 libxml2-devel xz xz-devel libxslt libxslt-devel readline readline-devel tk tcl tcl-devel kernel-devel pam-devel firewalld -y
 
+        if [ $OS = ol ]
+        then
+            yum install oracle-database-server-12cR2-preinstall kmod-oracleasm oracleasm-support -y
+        fi
+        
+        yum upgrade -y
     fi
-
-    systemctl enable ntpd
-    systemctl enable firewalld
 }
 
 set_swapoff() {
-echo 'Swap OFF'
+echo 'Swap  OFF'
 swapoff -a
 
 if [ $OS = ubuntu ] || [ $OS = debian ] 
 then
     chmod 755 /etc/rc.local
-elif [ $OS = centos ] || [ $OS = redhat ] || [ $OS = ol ]
+    echo 'swapoff -a' >> /etc/rc.local
+elif [ $OS = centos ] || [ $OS = rhel ] || [ $OS = ol ]
 then
     chmod 755 /etc/rc.d/rc.local
+    echo 'swapoff -a' >> /etc/rc.d/rc.local
 fi  
 }
 #
@@ -107,15 +108,18 @@ cat /sys/kernel/mm/transparent_hugepage/defrag
 if [ $OS = ubuntu ] || [ $OS = debian ]
 then
     echo "# $DATE : Modify server setter" >> /etc/rc.local
-    echo "echo never > /sys/kernel/mm/transparent_hugepage/enabled" >> /etc/rc.local
     echo "echo never > /sys/kernel/mm/transparent_hugepage/defrag" >> /etc/rc.local
-elif [ $OS = centos ] || [ $OS = redhat ] || [ $OS = ol ]
+elif [ $OS = centos ] || [ $OS = rhel ] || [ $OS = ol ]
 then
     echo "# $DATE : Modify server setter" >> /etc/rc.d/rc.local
-    echo "echo never > /sys/kernel/mm/transparent_hugepage/enabled" >> /etc/rc.d/rc.local
     echo "echo never > /sys/kernel/mm/transparent_hugepage/defrag" >> /etc/rc.d/rc.local
 fi
 }
+
+grubby --update-kernel=ALL --args="elevator=deadline"
+grubby --update-kernel=ALL --args="transparent_hugepage=never"
+grubby --info=ALL
+
 #
 
 set_limits() {
@@ -145,7 +149,7 @@ if [ $OS = ubuntu ] || [ $OS = debian ]
 then
     echo "# $DATE : Modify server setter" >> /etc/pam.d/login
     echo "session required /lib/x86_64-linux-gnu/security/pam_limits.so" >> /etc/pam.d/login
-elif [ $OS = centos ] || [ $OS = redhat ] || [ $OS = ol ]
+elif [ $OS = centos ] || [ $OS = rhel ] || [ $OS = ol ]
 then
     echo "# $DATE : Modify server setter" >> /etc/pam.d/login
     echo "session required /lib64/security/pam_limits.so" >> /etc/pam.d/login
@@ -156,7 +160,7 @@ fi
 set_selinux() {
 echo "selinux config setting"
 
-sed -e s/SELINUX=enforcing/SELINUX=permissive/g /etc/selinux/config > /etc/selinux/config.tmp
+sed -e s/SELINUX=enforcing/SELINUX=disabled/g /etc/selinux/config > /etc/selinux/config.tmp
 mv /etc/selinux/config /etc/selinux/config.$DATE
 mv /etc/selinux/config.tmp /etc/selinux/config
 
@@ -167,27 +171,31 @@ sestatus
 
 set_disks() {
 echo "disk setting will be modify (disk count), not nvme disk"
-
+echo "ex) disable write cache : hdparm -W 0 /dev/sdb"
 
 if [ $OS = ubuntu ] || [ $OS = debian ]
 then
-    echo "echo noop > /sys/block/sdb/queue/scheduler" >> /etc/rc.local
     echo "echo 1000 > /sys/block/sdb/queue/nr_requests" >> /etc/rc.local
 
     echo "######################################################################################"
     echo "if data directiory file system is xfs then /etc/fstab"
-    echo "    xfs mount option: rw,noatime,nodiratime,inode64,logbufs=8,logbsize=256k,attr2,allocsize=1m"
+    echo "    xfs mount option: rw,nodev,noatime,nodiratime,nobarrier,discard,inode64,logbufs=8,logbsize=256k,attr2,allocsize=16m"
+    echo "    and /etc/rc.local "
+    echo "    blockdev --setra 16384 /dev/sdb"
+    echo "    blockdev --report /dev/sdb"
     echo " else ext4 then /etc/fstab"
     echo "   ext4 mount option: rw,noatime,nodiratime,nobarrier,data=ordered"
     echo "######################################################################################"
-elif [ $OS = centos ] || [ $OS = redhat ] || [ $OS = ol ]
+elif [ $OS = centos ] || [ $OS = rhel ] || [ $OS = ol ]
 then
-    echo "echo noop > /sys/block/sdb/queue/scheduler" >> /etc/rc.d/rc.local
     echo "echo 1000 > /sys/block/sdb/queue/nr_requests" >> /etc/rc.d/rc.local
 
     echo "######################################################################################"
     echo "if data directiory file system is xfs then /etc/fstab"
-    echo "    xfs mount option: rw,noatime,nodiratime,inode64,logbufs=8,logbsize=256k,attr2,allocsize=1m"
+    echo "    xfs mount option: rw,nodev,noatime,nodiratime,nobarrier,discard,inode64,logbufs=8,logbsize=256k,attr2,allocsize=16m"
+    echo "    and /etc/rc.d/rc.local "
+    echo "    blockdev --setra 16384 /dev/sdb"
+    echo "    blockdev --report /dev/sdb"
     echo " else ext4 then /etc/fstab"
     echo "   ext4 mount option: rw,noatime,nodiratime,nobarrier,data=ordered"
     echo "######################################################################################"
@@ -213,21 +221,22 @@ echo "NTP Setting"
 
 systemctl stop ntpd
 
-if [ $OS = ubuntu ] || [ $OS = debian ]
+if [ $OS = ubuntu ] || [ $OS = debian ] ||  [ $OS = centos ] 
 then
     mv /etc/default/ntpd /etc/default/ntpd.`date +%Y%m%d`
     echo "NTPD_OPTS=\"-x -g\"" > /etc/default/ntpd
-elif [ $OS = centos ] || [ $OS = redhat ] || [ $OS = ol ]
+elif [ $OS = rhel ] || [ $OS = ol ]
 then
     mv /etc/sysconfig/ntpd /etc/sysconfig/ntpd.`date +%Y%m%d`
-    echo "OPTIONS=\"-x -u ntp:ntp -p /var/run/ntpd.pid -g\"" > /etc/sysconfig/ntpd
+    echo "OPTIONS=\"-x -g\"" > /etc/sysconfig/ntpd
 fi
 
-echo "server ntp1.epidc.co.kr" >> /etc/ntp.conf
+echo "server ntp1.epidc.co.kr perfer " >> /etc/ntp.conf
 echo "server ntp2.epidc.co.kr" >> /etc/ntp.conf
 echo "server time.bora.net" >> /etc/ntp.conf
 
 systemctl start ntpd
+systemctl enable ntpd
 
 ntpq -p
 }
@@ -365,7 +374,7 @@ fi
 echo $DATETIME : $HOST $OS $ARCH $1 'Server Setting Processes start'
 #
 
-if [ $OS = redhat ] || [ $OS = ol ]
+if [ $OS = rhel ] || [ $OS = ol ]
 then
     make_local_repo
 fi
